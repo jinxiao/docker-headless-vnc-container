@@ -10,7 +10,20 @@ LABEL io.k8s.description="Headless VNC Container with Xfce window manager, firef
       io.openshift.expose-services="6901:http,5901:xvnc" \
       io.openshift.tags="vnc, ubuntu, xfce" \
       io.openshift.non-scalable=true
+# install chinese fonts support
+RUN apt-get install fonts-wqy* ttf-wqy* -y
 
+# install java
+RUN add-apt-repository ppa:webupd8team/java
+RUN apt-get update
+# say yes to the oracle license agreement
+RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+
+RUN apt-get install -y --force-yes oracle-java8-installer
+RUN apt-get install -y --force-yes oracle-java8-set-default
+ADD ./eclipse-inst-linux64.tar.gz /opt/
+RUN tar /opt/eclipse-inst-linux64.tar.gz -C /opt
 ## Connection ports for controlling the UI:
 # VNC port:5901
 # noVNC webport, connect via http://IP:6901/?password=vncpassword
